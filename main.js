@@ -1,79 +1,76 @@
-const canvas = document.querySelector('canvas');
-const ctx = canvas.getContext('2d');
-
-const width = canvas.width = window.innerWidth;
-const height = canvas.height = window.innerHeight;
-function random(min, max) {
-  return Math.random() * (max - min) + min;
-}
-
-function randomColor() {
-  return `hsl(${random(0, 360)}, 100%, 50%)`;
-}
-
-function randomSign() {
-  return Math.random() > 0.5 ? 1 : -1;
-}
-
-class FlowPath {
-  constructor(x, y, size, color) {
-    this.x = x;
-    this.y = y;
-    this.size = size;
-    this.color = color;
-    this.points = [];
-    this.lifeSpan = 100;
-    this.life = this.lifeSpan;
+/*const aliceTumbling = [
+    { transform: 'rotate(0) scale(1)' },
+    { transform: 'rotate(360deg) scale(0)' }
+  ];
+  
+  const aliceTiming = {
+    duration: 2000,
+    iterations: 1,
+    fill: 'forwards'
   }
+  
+  const alice1 = document.querySelector("#alice1");
+  const alice2 = document.querySelector("#alice2");
+  const alice3 = document.querySelector("#alice3");
+  
+  alice1.animate(aliceTumbling, aliceTiming).finished
+    .then(() => alice2.animate(aliceTumbling, aliceTiming).finished)
+    .then(() => alice3.animate(aliceTumbling, aliceTiming).finished)
+    .catch(error => console.error(`Error animating Alices: ${error}`));*/
 
-  update() {
-    this.life--;
-    if (this.life <= 0) {
-      this.points = [];
-      this.life = this.lifeSpan;
-      this.x = random(0, width);
-      this.y = random(0, height);
-    }
 
-    this.points.push({ x: this.x, y: this.y });
-    this.x += random(-3, 3) * randomSign();
-    this.y += random(-3, 3) * randomSign();
+
+    const aliceTumbling = [
+      { transform: 'rotate(0) scale(1)', backgroundColor: '' },
+      { transform: 'rotate(360deg) scale(0)', backgroundColor: '' }
+  ];
+  
+  const aliceTiming = {
+      duration: 2000,
+      iterations: 1,
+      fill: 'forwards'
+  };
+  
+  const aliceElements = ['alice1', 'alice2', 'alice3'];
+  
+  function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
   }
-
-  draw() {
-    ctx.strokeStyle = this.color;
-    ctx.lineWidth = this.size;
-
-    ctx.beginPath();
-    ctx.moveTo(this.points[0].x, this.points[0].y);
-    for (let i = 1; i < this.points.length; i++) {
-      ctx.lineTo(this.points[i].x, this.points[i].y);
-    }
-    ctx.stroke();
+  
+  function animateSequence(elements) {
+      let currentElementIndex = 0;
+  
+      function nextElement() {
+          if (currentElementIndex >= elements.length) {
+              return;
+          }
+  
+          const elementId = elements[currentElementIndex];
+          const element = document.getElementById(elementId);
+  
+          const randomColor = getRandomColor();
+  
+          const animationFrames = [
+              { transform: 'rotate(0) scale(1)', backgroundColor: element.style.backgroundColor },
+              { transform: 'rotate(360deg) scale(0)', backgroundColor: randomColor }
+          ];
+  
+          element.animate(animationFrames, aliceTiming).finished
+              .then(() => {
+                  currentElementIndex++;
+                  nextElement();
+              })
+              .catch(error => console.error(`Error animating ${elementId}: ${error}`));
+      }
+  
+      nextElement();
   }
-}
-
-let flowPaths = [];
-
-// 初始化一些路径
-for (let i = 0; i < 25; i++) {
-  let x = random(0, width);
-  let y = random(0, height);
-  let size = random(3, 6);
-  let color = randomColor();
-  flowPaths.push(new FlowPath(x, y, size, color));
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  ctx.fillStyle = "#00FFFF"; // 设置背景色为深灰色
-  ctx.fillRect(0, 0, width, height);
-
-  flowPaths.forEach(path => {
-    path.update();
-    path.draw();
+  
+  document.addEventListener("DOMContentLoaded", () => {
+      animateSequence(aliceElements);
   });
-}
-
-animate();
-
