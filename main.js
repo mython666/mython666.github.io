@@ -1,76 +1,262 @@
-/*const aliceTumbling = [
-    { transform: 'rotate(0) scale(1)' },
-    { transform: 'rotate(360deg) scale(0)' }
-  ];
-  
-  const aliceTiming = {
-    duration: 2000,
-    iterations: 1,
-    fill: 'forwards'
+// 定义弹球计数变量
+
+const para = document.querySelector('p');
+let count = 0;
+
+// 设置画布
+
+const canvas = document.querySelector('canvas');
+const ctx = canvas.getContext('2d');
+
+const width = canvas.width = window.innerWidth;
+const height = canvas.height = window.innerHeight;
+
+// 生成随机数的函数
+
+function random(min,max) {
+  const num = Math.floor(Math.random()*(max-min)) + min;
+  return num;
+}
+
+// 生成随机颜色值的函数
+
+function randomColor() {
+  const color = 'rgb(' +
+                random(0, 255) + ',' +
+                random(0, 255) + ',' +
+                random(0, 255) + ')';
+  return color;
+}
+
+// 定义 Shape 构造器
+
+function Shape(x, y, velX, velY, exists) {
+  this.x = x;
+  this.y = y;
+  this.velX = velX;
+  this.velY = velY;
+  this.exists = exists;
+}
+
+// 定义 Ball 构造器，继承自 Shape
+
+function Ball(x, y, velX, velY, exists, color, size) {
+  Shape.call(this, x, y, velX, velY, exists);
+
+  this.color = color;
+  this.size = size;
+}
+
+Ball.prototype = Object.create(Shape.prototype);
+Ball.prototype.constructor = Ball;
+
+// 定义彩球绘制函数
+
+Ball.prototype.draw = function() {
+  ctx.beginPath();
+  ctx.fillStyle = this.color;
+  ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+  ctx.fill();
+};
+
+// 定义彩球更新函数
+
+Ball.prototype.update = function() {
+  if((this.x + this.size) >= width) {
+    this.velX = -(this.velX);
   }
-  
-  const alice1 = document.querySelector("#alice1");
-  const alice2 = document.querySelector("#alice2");
-  const alice3 = document.querySelector("#alice3");
-  
-  alice1.animate(aliceTumbling, aliceTiming).finished
-    .then(() => alice2.animate(aliceTumbling, aliceTiming).finished)
-    .then(() => alice3.animate(aliceTumbling, aliceTiming).finished)
-    .catch(error => console.error(`Error animating Alices: ${error}`));*/
+
+  if((this.x - this.size) <= 0) {
+    this.velX = -(this.velX);
+  }
+
+  if((this.y + this.size) >= height) {
+    this.velY = -(this.velY);
+  }
+
+  if((this.y - this.size) <= 0) {
+    this.velY = -(this.velY);
+  }
+
+  this.x += this.velX;
+  this.y += this.velY;
+};
+
+// 定义碰撞检测函数
+
+Ball.prototype.collisionDetect = function() {
+  for(var j = 0; j < balls.length; j++) {
+    if(this !== balls[j]) {
+      const dx = this.x - balls[j].x;
+      const dy = this.y - balls[j].y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < this.size + balls[j].size && balls[j].exists) {
+        balls[j].color = this.color = randomColor();
+      }
+    }
+  }
+};
+
+// 定义 EvilCircle 构造器, 继承自 Shape
+
+function EvilCircle(x, y, exists) {
+  Shape.call(this, x, y, 20, 20, exists);
+
+  this.color = 'white';
+  this.size = 10;
+}
+
+EvilCircle.prototype = Object.create(Shape.prototype);
+EvilCircle.prototype.constructor = EvilCircle;
 
 
+// 定义 EvilCircle 绘制方法
 
-    const aliceTumbling = [
-      { transform: 'rotate(0) scale(1)', backgroundColor: '' },
-      { transform: 'rotate(360deg) scale(0)', backgroundColor: '' }
-  ];
-  
-  const aliceTiming = {
-      duration: 2000,
-      iterations: 1,
-      fill: 'forwards'
+EvilCircle.prototype.draw = function() {
+  ctx.beginPath();
+  ctx.strokeStyle = this.color;
+  ctx.lineWidth = 3;
+  ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+  ctx.stroke();
+};
+
+
+// 定义 EvilCircle 的边缘检测（checkBounds）方法
+
+EvilCircle.prototype.checkBounds = function() {
+  if((this.x + this.size) >= width) {
+    this.x -= this.size;
+  }
+
+  if((this.x - this.size) <= 0) {
+    this.x += this.size;
+  }
+
+  if((this.y + this.size) >= height) {
+    this.y -= this.size;
+  }
+
+  if((this.y - this.size) <= 0) {
+    this.y += this.size;
+  }
+};
+
+// 定义 EvilCircle 控制设置（setControls）方法
+
+EvilCircle.prototype.setControls = function() {
+  window.onkeydown = e => {
+    switch(e.key) {
+      case 'a':
+      case 'A':
+      case 'ArrowLeft':
+        this.x -= this.velX;
+        break;
+      case 'd':
+      case 'D':
+      case 'ArrowRight':
+        this.x += this.velX;
+        break;
+      case 'w':
+      case 'W':
+      case 'ArrowUp':
+        this.y -= this.velY;
+        break;
+      case 's':
+      case 'S':
+      case 'ArrowDown':
+        this.y += this.velY;
+        break;
+    }
   };
-  
-  const aliceElements = ['alice1', 'alice2', 'alice3'];
-  
-  function getRandomColor() {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
+};
+
+
+
+
+EvilCircle.prototype.updatePosition = function(mouseX, mouseY) {
+  this.x = mouseX;
+  this.y = mouseY;
+};
+
+let mouseX = 0, mouseY = 0;
+
+canvas.addEventListener('mousemove', function(event) {
+  const rect = canvas.getBoundingClientRect();
+  mouseX = event.clientX - rect.left;
+  mouseY = event.clientY - rect.top;
+});
+
+
+
+
+
+
+
+// 定义 EvilCircle 冲突检测函数
+
+EvilCircle.prototype.collisionDetect = function() {
+  for(let j = 0; j < balls.length; j++) {
+    if( balls[j].exists ) {
+      const dx = this.x - balls[j].x;
+      const dy = this.y - balls[j].y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < this.size + balls[j].size) {
+        balls[j].exists = false;
+        count--;
+        para.textContent = '剩余彩球数：' + count;
+
       }
-      return color;
+    }
   }
-  
-  function animateSequence(elements) {
-      let currentElementIndex = 0;
-  
-      function nextElement() {
-          if (currentElementIndex >= elements.length) {
-              return;
-          }
-  
-          const elementId = elements[currentElementIndex];
-          const element = document.getElementById(elementId);
-  
-          const randomColor = getRandomColor();
-  
-          const animationFrames = [
-              { transform: 'rotate(0) scale(1)', backgroundColor: element.style.backgroundColor },
-              { transform: 'rotate(360deg) scale(0)', backgroundColor: randomColor }
-          ];
-  
-          element.animate(animationFrames, aliceTiming).finished
-              .then(() => {
-                  currentElementIndex++;
-                  nextElement();
-              })
-              .catch(error => console.error(`Error animating ${elementId}: ${error}`));
-      }
-  
-      nextElement();
+};
+
+
+// 定义一个数组，生成并保存所有的球，
+
+const balls = [];
+
+while(balls.length < 25) {
+  const size = random(10,20);
+  let ball = new Ball(
+    // 为避免绘制错误，球至少离画布边缘球本身一倍宽度的距离
+    random(0 + size, width - size),
+    random(0 + size, height - size),
+    random(-7, 7),
+    random(-7, 7),
+    true,
+    randomColor(),
+    size
+  );
+  balls.push(ball);
+  count++;
+  para.textContent = '剩余彩球数：' + count;
+}
+
+// 定义一个循环来不停地播放
+
+let evil = new EvilCircle(random(0, width), random(0, height), true);
+evil.setControls();
+
+function loop() {
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.fillRect(0, 0, width, height);
+
+  for(let i = 0; i < balls.length; i++) {
+    if(balls[i].exists) {
+      balls[i].draw();
+      balls[i].update();
+      balls[i].collisionDetect();
+    }
   }
-  
-  document.addEventListener("DOMContentLoaded", () => {
-      animateSequence(aliceElements);
-  });
+// 更新 EvilCircle 的位置
+evil.updatePosition(mouseX, mouseY);
+  evil.draw();
+  evil.checkBounds();
+  evil.collisionDetect();
+
+  requestAnimationFrame(loop);
+}
+
+loop();
