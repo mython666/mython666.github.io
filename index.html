@@ -1,59 +1,32 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+<!doctype html>
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宝藏地图寻宝游戏</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Breakout</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #game {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>宝藏地图寻宝游戏</h1>
-    <div id="treasure-map">
-        <!-- 每个步骤的 div -->
-        <div class="step hidden" data-image="images/ancient_clue.png">
-            <img src="" alt="古代线索">
-            <p>在古老的图书馆里找到了第一个线索...</p>
-        </div>
-        <div class="step hidden" data-image="images/library.png">
-            <img src="" alt="图书馆">
-            <p>在图书馆的一个秘密房间里找到了一张古老的地图...</p>
-        </div>
-        <div class="step hidden" data-image="images/old_map.png">
-            <img src="" alt="古老地图">
-            <p>解码成功!宝藏在一座古老的神庙中...</p>
-        </div>
-        <div class="step hidden" data-image="images/ancient_runes.png">
-            <img src="" alt="古文">
-            <p>地图上的古文揭示了一个神秘洞穴的位置...</p>
-        </div>
-        <div class="step hidden" data-image="images/temple_guard.png">
-            <img src="" alt="神庙守卫">
-            <p>找到了一个神秘的箱子...</p>
-        </div>
-        <div class="step hidden" data-image="images/mysterious_box.png">
-            <img src="" alt="神秘箱子">
-            <p>在神秘洞穴中找到了一把金色钥匙...</p>
-        </div>
-        <div class="step hidden" data-image="images/mysterious_cave.png">
-            <img src="" alt="神秘洞穴">
-            <p>在神秘洞穴中找到了一把金色钥匙...</p>
-        </div>
-        <div class="step hidden" data-image="images/golden_key.png">
-            <img src="" alt="金色钥匙">
-            <p>在神秘洞穴中找到了一把金色钥匙...</p>
-        </div>
-        <div class="step hidden" data-image="images/legendary_treasure.png">
-            <img src="" alt="传说中的宝藏">
-            <p>恭喜!你找到了传说中的宝藏!</p>
-        </div>
-    </div>
-    <div id="dice-container" class="hidden">
-        <img src="images/dice.png" alt="骰子" id="dice">
-        <button id="roll-dice">掷骰子</button>
-        <p id="dice-result"></p>
-    </div>
-    <audio id="music" src="music/background-music.mp3" loop autoplay></audio>
-    <button id="start-game">开始游戏</button>
-    <script src="script.js"></script>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="game"></div>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.17.0/dist/phaser.min.js"></script>
+  <script src="breakout.js"></script>
 </body>
+
 </html>
